@@ -26,13 +26,6 @@
   },
   "homepage": "https://github.com/byu-oit/live-plugin-manager#readme",
   "devDependencies": {
-    "@types/debug": "^4.1.4",
-    "@types/fs-extra": "^5.0.5",
-    "@types/lockfile": "^1.0.1",
-    "@types/semver": "^6.0.0",
-    "@types/tar": "^4.0.0",
-    "@types/url-join": "0",
-    "@types/node-fetch": "^2.3.2",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.6",
@@ -43,6 +36,13 @@
     "typescript": "^3.4.4"
   },
   "dependencies": {
+    "@types/debug": "^4.1.4",
+    "@types/fs-extra": "^5.0.5",
+    "@types/lockfile": "^1.0.1",
+    "@types/semver": "^6.0.0",
+    "@types/tar": "^4.0.0",
+    "@types/url-join": "0",
+    "@types/node-fetch": "^2.3.2",
     "debug": "^4.1.1",
     "fs-extra": "^7.0.1",
     "lockfile": "^1.0.4",
