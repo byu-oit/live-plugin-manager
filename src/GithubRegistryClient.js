@@ -70,14 +70,28 @@ class GithubRegistryClient {
 exports.GithubRegistryClient = GithubRegistryClient;
 function extractRepositoryInfo(repository) {
     const parts = repository.split("/");
-    if (parts.length !== 2) {
+    let owner;
+    let repo;
+    let ref;
+    if (repository.indexOf("git://") >= 0) {
+        const repoParts = parts[4].split("#");
+        owner = parts[3];
+        repo = repoParts[0].replace(".git", "");
+        ref = repoParts[1];
+    }
+    else if (parts.length !== 2) {
         throw new Error("Invalid repository name");
     }
-    const repoParts = parts[1].split("#");
+    else {
+        const repoParts = parts[1].split("#");
+        owner = parts[0];
+        repo = repoParts[0];
+        ref = repoParts[1];
+    }
     const repoInfo = {
-        owner: parts[0],
-        repo: repoParts[0],
-        ref: repoParts[1] || "master"
+        owner,
+        repo,
+        ref: ref || "master"
     };
     return repoInfo;
 }

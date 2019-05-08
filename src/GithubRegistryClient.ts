@@ -2,8 +2,9 @@ import * as path from "path";
 import * as fs from "./fileSystem";
 import {Headers, headersBasicAuth, headersTokenAuth, httpJsonGet} from "./httpUtils";
 import * as Debug from "debug";
-import { downloadTarball, extractTarball } from "./tarballUtils";
-import { PackageJsonInfo } from "./PackageInfo";
+import {downloadTarball, extractTarball} from "./tarballUtils";
+import {PackageJsonInfo} from "./PackageInfo";
+
 const debug = Debug("live-plugin-manager.GithubRegistryClient");
 
 export class GithubRegistryClient {
@@ -15,17 +16,17 @@ export class GithubRegistryClient {
 
 			switch (auth.type) {
 				case "token":
-				this.headers = {
-					...headersTokenAuth(auth.token),
-					"user-agent": "live-plugin-manager"
-				};
-				break;
+					this.headers = {
+						...headersTokenAuth(auth.token),
+						"user-agent": "live-plugin-manager"
+					};
+					break;
 				case "basic":
-				this.headers = {
-					...headersBasicAuth(auth.username, auth.password),
-					"user-agent": "live-plugin-manager"
-				};
-				break;
+					this.headers = {
+						...headersBasicAuth(auth.username, auth.password),
+						"user-agent": "live-plugin-manager"
+					};
+					break;
 				default:
 					throw new Error("Auth type not supported");
 			}
@@ -40,7 +41,7 @@ export class GithubRegistryClient {
 		debug("Repository info: ", repoInfo);
 
 		const urlPkg
-		= `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${repoInfo.ref}/package.json`;
+			= `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${repoInfo.ref}/package.json`;
 
 		const pkgContent = await httpJsonGet<PackageJsonInfo>(
 			urlPkg,
@@ -50,9 +51,9 @@ export class GithubRegistryClient {
 		}
 
 		const urlArchiveLink
-		= `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/tarball/${repoInfo.ref}`;
+			= `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/tarball/${repoInfo.ref}`;
 
-		pkgContent.dist = { tarball: urlArchiveLink };
+		pkgContent.dist = {tarball: urlArchiveLink};
 
 		return pkgContent;
 	}
@@ -85,27 +86,41 @@ export class GithubRegistryClient {
 
 function extractRepositoryInfo(repository: string) {
 	const parts = repository.split("/");
-	if (parts.length !== 2) {
+	let owner;
+	let repo;
+	let ref;
+
+	if (repository.indexOf("git://") >= 0) {
+		const repoParts = parts[4].split("#");
+
+		owner = parts[3];
+		repo = repoParts[0].replace(".git", "");
+		ref = repoParts[1];
+	} else if (parts.length !== 2) {
 		throw new Error("Invalid repository name");
+	} else {
+		const repoParts = parts[1].split("#");
+
+		owner = parts[0];
+		repo = repoParts[0];
+		ref = repoParts[1];
 	}
 
-	const repoParts = parts[1].split("#");
-
 	const repoInfo = {
-		owner: parts[0],
-		repo: repoParts[0],
-		ref: repoParts[1] || "master"
+		owner,
+		repo,
+		ref: ref || "master"
 	};
 
 	return repoInfo;
 }
 
-export interface GithubAuthUserToken  {
+export interface GithubAuthUserToken {
 	type: "token";
 	token: string;
 }
 
-export interface GithubAuthBasic  {
+export interface GithubAuthBasic {
 	type: "basic";
 	username: string;
 	password: string;
@@ -113,13 +128,10 @@ export interface GithubAuthBasic  {
 
 export type GithubAuth = GithubAuthUserToken
 	| GithubAuthBasic;
-	// | AuthOAuthToken
-	// | AuthOAuthSecret
-	// | AuthUserToken
-	// | AuthJWT;
-
-
-
+// | AuthOAuthToken
+// | AuthOAuthSecret
+// | AuthUserToken
+// | AuthJWT;
 
 
 // Implementation using github api
