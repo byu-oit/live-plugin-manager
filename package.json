@@ -1,5 +1,5 @@
 {
-  "name": "live-plugin-manager",
+  "name": "@byu-oit/live-plugin-manager",
   "version": "1.0.0",
   "description": "Install and uninstall any node package at runtime from npm registry",
   "keywords": [
